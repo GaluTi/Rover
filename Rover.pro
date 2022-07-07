@@ -15,7 +15,6 @@ SOURCES += \
 
 HEADERS += \
     drawwidget.h \
-    lunarRover.h \
     mainwindow.h
 
 FORMS += \

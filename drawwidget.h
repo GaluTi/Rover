@@ -2,14 +2,22 @@
 #define DRAWWIDGET_H
 
 #include <QWidget>
+#include <QPainter>
+#include <QMouseEvent>
+#include <QPen>
+#include <math.h>
 
-const float R = 2;
-const float S = 6;
-const float S_T_W_D = 6;
-const double eps = 1;
-const float suspension_angle = M_PI/3.5;
-const float delta_suspension = R/4;
+const float R = 2; //Радиус колеса
+const float S = 6; //Расстояние между колёсами
+const float suspension_distance = 14; // Расстояние между центрами подвесок
+const double eps = 0.01; //Погрешность
+const float suspension_angle = M_PI/3.5; //Угол при основании подвески
+const float suspension_height = S * tan(suspension_angle) / 2; // Высота в треугольнике подвески
+const float suspension_edge = S / (2 * cos(suspension_angle)); //Боковая сторона треугольника подвески
+const float delta_suspension = R/4; //Расстояние, на которое отстоит верхняя и нижняя части подвески, от линии, соединяющей цетры колеса и подвески
+const int slider_size = 5000; //Количество шагов слайдера
 
+//Двумерный вектор
 struct Vector2D {
 
     double x;
@@ -42,6 +50,9 @@ struct Vector2D {
     Vector2D operator*(const double& f) const {
         return Vector2D(x * f, y * f);
     }
+    Vector2D operator/(const double& f) const {
+        return Vector2D(x / f, y / f);
+    }
     bool operator==(const Vector2D& v) const {
         return (fabs(x - v.x) < eps && fabs(y - v.y) < eps);
     }
@@ -50,7 +61,7 @@ struct Vector2D {
     }
 };
 
-
+//Данный виджет занимается отрисовкой всего
 class DrawWidget : public QWidget
 {
     Q_OBJECT
@@ -64,16 +75,21 @@ public:
     Vector2D second_wheel_center;
     Vector2D third_wheel_center;
     Vector2D fourth_wheel_center;
-    bool first_wheel;
-    bool second_wheel;
-    bool third_wheel;
-    bool fourth_wheel;
     Vector2D first_suspension_center;
     Vector2D second_suspension_center;
-    std::vector<std::pair<Vector2D, Vector2D>> suspension;
+    std::vector<std::pair<Vector2D, Vector2D>> suspension; //Подвеска представляет из себя вектор пар точек, где каждая пара точек - ребро подвески. Всего в одной подвеске 4 ребра
     std::vector<Vector2D> rover_body;
-    bool is_suspension;
-    bool is_rover_body;
+    bool surface_calculated;
+    bool wheel_center_line_calculated;
+    bool first_wheel_calculated;
+    bool second_wheel_calculated;
+    bool third_wheel_calculated;
+    bool fourth_wheel_calculated;
+    bool suspension_calculated;
+    bool rover_body_calculated;
+    bool surface_check;
+    bool wheel_center_line_check;
+    bool rover_check;
 
     DrawWidget();
     void paintEvent(QPaintEvent *event);
